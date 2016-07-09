@@ -1,0 +1,11 @@
+{
+  "name": "slot_machine",
+  "version": "1.0.0",
+  "description": "A slot machine that dispenses caffeinated beverages!",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "john kang",
+  "license": "ISC"
+}
