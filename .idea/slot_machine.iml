@@ -7,5 +7,6 @@
     <orderEntry type="library" name="jquery-2.2.4" level="application" />
     <orderEntry type="library" name="jquery.velocity" level="application" />
     <orderEntry type="library" name="velocity.ui" level="application" />
+    <orderEntry type="library" name="caffeine-slot-machine node_modules" level="project" />
   </component>
 </module>

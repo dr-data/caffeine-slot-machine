@@ -1,11 +1,13 @@
-var http = require('http');
+"use strict";
 
+var http = require('http');
+var fs = require('fs');
 const PORT=3000;
 
-var server = http.createServer(function(req, res) {
-  req.end('it works!');
-});
-
-server.listen(PORT, function() {
-  console.log('Server listening on: http://localhost:%s', PORT);
-});
+http.createServer(function(req, res) {
+  fs.readFile('html/index.html',function (err, data){
+    res.writeHead(200, {'Content-Type': 'text/html','Content-Length':data.length});
+    res.write(data);
+    res.end();
+  });
+}).listen(PORT);
