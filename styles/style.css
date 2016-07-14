@@ -1,15 +1,15 @@
-#slot-machine {
+.slot-machine {
     background-color: #B52626;
-    width: 85%;
-    height: 485px;
+    width: 90%;
+    height: 500px;
     margin: 0 auto;
     margin-top: 35px;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 5px;
     position: relative;
 }
 
-#slot-heading {
+.slot-heading {
     font-family: cursive;
     text-align: center;
     color: white;
@@ -51,7 +51,15 @@
     font-family: Arial;
     font-size: 1.4em;
 }
-
+.status {
+    color: white;
+    font-size: 1.4em;
+    font-weight: 700;
+    font-family: cursive;
+    text-align: center;
+    width: 50%;
+    margin: 0 auto;
+}
 .lever {
     text-align: center;
 }
@@ -66,11 +74,3 @@ button {
     font-size: 1.5em;
 }
 
-#trapezoid {
-    border-radius: 12px;
-    border-top: 225px solid #B54926;
-    border-right: 30px solid transparent;
-    border-left: 30px solid transparent;
-    width: 81%;
-    margin: 0 auto;
-}

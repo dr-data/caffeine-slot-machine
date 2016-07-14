@@ -7,14 +7,32 @@ var Game = function(slotMachine) {
     tea: 0,
     espresso: 0,
   };
+  var winningCombinations = {
+    coffee: ['Coffee Maker', 'Coffee Filter', 'Coffee Grounds'],
+    tea: ['Teapot', 'Tea Strainer', 'Loose Tea'],
+    espresso: ['Espresso Machine', 'Espresso Tamper', 'Ground Espresso Beans'],
+  };
   this.init = function() {
     slotMachine.init();
   };
-  this.run = function() {
-    slotMachine.start(function(a) {
-      console.log(a);
+  this.run = function(callback) {
+    slotMachine.start(function(slotResult) {
+      checkResult(slotResult, function(wc) {
+        callback(wc);
+      });
     });
   };
+  var checkResult = function(result, callback) {
+    let resultSorted = result.sort();
+    for (var wc in winningCombinations) {
+      let wcSorted = winningCombinations[wc].sort();
+      if (_.isEqual(resultSorted, wcSorted)) {
+        callback(wc);
+        return;
+      }
+    }
+    callback(null);
+  }
 };
 
 var SlotMachine = function() {
@@ -49,7 +67,7 @@ var SlotMachine = function() {
     let counter = 0;
     slots.forEach((slot) => {
       slot.start((currentItem) => {
-        slotResults.push(currentItem);
+        slotResults.unshift(currentItem);
         counter++;
         if (counter === slots.length) {
           var result = getResults();
@@ -109,12 +127,20 @@ var Slot = function(container, items, interval) {
   };
 };
 
-$(document).ready(function() {
+$(function() {
   var slotMachine = new SlotMachine();
   var game = new Game(slotMachine);
   game.init();
-
+  $('.status').html("Press the lever!");
   $('.lever').click(function() {
-    game.run();
+    $('button').prop('disabled', true);
+    game.run(function(result) {
+      if (result) {
+        $('.status').html('Congratulations! You won a ' + result + '!');
+      } else {
+        $('.status').html('Bummer.. try again!');
+      }
+      $('button').prop('disabled', false);
+    });
   });
-});
+})();
