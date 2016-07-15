@@ -1,18 +1,18 @@
 .slot-machine {
-    background-color: #B52626;
-    width: 90%;
-    height: 500px;
+    border: 1px solid #801515;
+    width: 95%;
+    min-width: 500px;
+    height: 600px;
     margin: 0 auto;
-    margin-top: 35px;
     padding: 10px;
     border-radius: 5px;
     position: relative;
 }
 
 .slot-heading {
-    font-family: cursive;
+    font-family: Cursive;
     text-align: center;
-    color: white;
+    color: #801515;
     font-weight: 100;
     font-size: 2.5em;
 }
@@ -20,18 +20,23 @@
 .reels {
     display: flex;
     margin: 0 auto;
-    width: 630px;
+    width: 500px;
+    height: 175px;
+    background-color: #801515;
+    border-radius: 5px;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 1px 1px 1px #333333;
 }
 
 .slot {
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     background-color: white;
     position: relative;
     overflow: hidden;
-    border: 1px solid #B52626;
-    border-radius: 10px;
-    margin: 6px;
+    border-radius: 5px;
+    margin: 5px;
 }
 
 .item-container {
@@ -45,32 +50,59 @@
     align-items: center;
     text-align: center;
     color: gold;
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     top: 50%;
     font-family: Arial;
-    font-size: 1.4em;
+    font-size: 1em;
 }
 .status {
-    color: white;
-    font-size: 1.4em;
-    font-weight: 700;
-    font-family: cursive;
+    color: #333333;
+    font-size: 1.3em;
+    font-weight: 300;
+    font-family: Cursive;
     text-align: center;
     width: 50%;
     margin: 0 auto;
+    margin-top: 20px;
 }
 .lever {
     text-align: center;
 }
 
 button {
-    margin-top: 35px;
-    background: gold;
+    margin-top: 20px;
+    background: white;
     width: 250px;
     height: 75px;
     outline: none;
-    border-radius: 30px;
+    border-radius: 8px;
     font-size: 1.5em;
+    font-family: Cursive;
 }
 
+.score-board {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.score {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.score .icon {
+    width: 75px;
+    height: 75px;
+}
+
+.score-count {
+    color: #333333;
+    margin-left: -15px;
+    font-family: Arial;
+    vertical-align: bottom;
+}

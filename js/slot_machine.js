@@ -2,21 +2,17 @@
 
 var Game = function(slotMachine) {
   var slotMachine = slotMachine;
-  this.wins = {
+  this.score = {
     coffee: 0,
     tea: 0,
     espresso: 0,
-  };
-  var winningCombinations = {
-    coffee: ['Coffee Maker', 'Coffee Filter', 'Coffee Grounds'],
-    tea: ['Teapot', 'Tea Strainer', 'Loose Tea'],
-    espresso: ['Espresso Machine', 'Espresso Tamper', 'Ground Espresso Beans'],
   };
   this.init = function() {
     slotMachine.init();
   };
   this.run = function(callback) {
     slotMachine.start(function(slotResult) {
+      console.log(slotResult);
       checkResult(slotResult, function(wc) {
         callback(wc);
       });
@@ -24,8 +20,9 @@ var Game = function(slotMachine) {
   };
   var checkResult = function(result, callback) {
     let resultSorted = result.sort();
+    let winningCombinations = slotMachine.winningCombinations;
     for (var wc in winningCombinations) {
-      let wcSorted = winningCombinations[wc].sort();
+      let wcSorted = winningCombinations[wc].combination.sort();
       if (_.isEqual(resultSorted, wcSorted)) {
         callback(wc);
         return;
@@ -35,39 +32,53 @@ var Game = function(slotMachine) {
   }
 };
 
-var SlotMachine = function() {
+var SlotMachine = function(combinations) {
   var slots = [];
   var slotResults = [];
+  this.winningCombinations = combinations;
+
   this.init = function() {
     let $container1 = $('#slot-1 > .item-container');
     let $container2 = $('#slot-2 > .item-container');
     let $container3 = $('#slot-3 > .item-container');
 
-    let slot1 = new Slot($container1, ['Coffee Maker', 'Teapot', 'Espresso Machine'], 500);
-    let slot2 = new Slot($container2, ['Coffee Filter', 'Tea Strainer', 'Espresso Tamper'], 250);
-    let slot3 = new Slot($container3, ['Coffee Grounds', 'Loose Tea', 'Ground Espresso Beans'], 125);
+    let items1 = shuffle([{item: 'Coffee Maker', color: '#C86428'},
+      {item: 'Teapot', color: '#08A242'},
+      {item: 'Espresso Machine', color: '#552000'}]);
+    let items2 = shuffle([{item: 'Coffee Filter', color: '#C86428'},
+      {item: 'Tea Strainer', color: '#08A242'},
+      {item: 'Espresso Tamper', color: '#552000'}]);
+    let items3 = shuffle([{item: 'Coffee Grounds', color: '#C86428'},
+      {item: 'Loose Tea', color: '#08A242'},
+      {item: 'Ground Espresso Beans', color: '#552000'}]);
 
-    slots.push(slot1);
-    slots.push(slot2);
-    slots.push(slot3);
+    let slot1 = new Slot($container1, items1, 350);
+    let slot2 = new Slot($container2, items2, 215);
+    let slot3 = new Slot($container3, items3, 100);
 
-    $($container1).append('<div style="color: #C86428">' + slot1.items[0] + '</div>');
-    $($container1).append('<div style="color: #08A242">' + slot1.items[1] + '</div>');
-    $($container1).append('<div style="color: #552000">' + slot1.items[2] + '</div>');
+    slots = [slot1, slot2, slot3];
 
-    $($container2).append('<div style="color: #C86428">' + slot2.items[0] + '</div>');
-    $($container2).append('<div style="color: #08A242">' + slot2.items[1] + '</div>');
-    $($container2).append('<div style="color: #552000">' + slot2.items[2] + '</div>');
-
-    $($container3).append('<div style="color: #C86428">' + slot3.items[0] + '</div>');
-    $($container3).append('<div style="color: #08A242">' + slot3.items[1] + '</div>');
-    $($container3).append('<div style="color: #552000">' + slot3.items[2] + '</div>');
+    slots.forEach((slot) => {
+      for (var i = 0; i < slot.items.length; i++) {
+        slot.$container.append('<div style="color:' + slot.items[i].color+ '">' + slot.items[i].item + '</div>');
+      }
+    });
+    function shuffle(arr) {
+      let i, j, x;
+      for (i = arr.length; i; i--) {
+        j = Math.floor(Math.random() * i);
+        x = arr[i - 1];
+        arr[i - 1] = arr[j];
+        arr[j] = x;
+      }
+      return arr;
+    };
   };
   this.start = function(callback) {
     let counter = 0;
     slots.forEach((slot) => {
       slot.start((currentItem) => {
-        slotResults.unshift(currentItem);
+        slotResults.push(currentItem);
         counter++;
         if (counter === slots.length) {
           var result = getResults();
@@ -85,30 +96,32 @@ var SlotMachine = function() {
 
 var Slot = function(container, items, interval) {
   this.items = items;
+  this.$container = container;
   var isRunning = false;
-  var $container = container;
   var interval = interval;
 
   this.start = function(callback) {
     isRunning = true;
-    $container.velocity({top: -100}, 'linear', interval, () => {
+    this.$container.velocity({top: -75}, 'linear', interval, () => {
       this.runSlot();
     });
 
     // Stop running after timeout
+    let randomOffset = Math.random() < 0.5 ? -1 : 1;
     window.setTimeout(() => {
       isRunning = false;
       this.stopSlot(function(currentItem) {
         callback(currentItem);
       });
-    }, 1000 + interval + (interval));
+    }, 3000 + (2*interval) + (randomOffset * interval));
   };
   this.runSlot = function() {
     if (isRunning) {
+      let $container = this.$container;
       let $firstEl = $container.find('div:first-child');
       $container.append($firstEl);
       $container.css({top: 100});
-      $container.velocity({top: -100}, 'linear', interval, () => {
+      $container.velocity({top: -75}, 'linear', interval, () => {
         $container.append($firstEl);
         this.runSlot();
       });
@@ -116,6 +129,7 @@ var Slot = function(container, items, interval) {
   };
   this.stopSlot = function(callback) {
     // Bounce effect on stop
+    let $container = this.$container;
     $container.velocity({top: 30}, 'ease-out', 200);
     $container.velocity({top: -15}, 'ease-out', 250);
     $container.velocity({top: 7}, 'ease-out', 125);
@@ -127,16 +141,43 @@ var Slot = function(container, items, interval) {
   };
 };
 
-$(function() {
-  var slotMachine = new SlotMachine();
+(function() {
+  var winningCombinations = {
+    coffee: {
+      combination: ['Coffee Maker', 'Coffee Filter', 'Coffee Grounds'],
+      color: '#C86428',
+    },
+    tea: {
+      combination: ['Teapot', 'Tea Strainer', 'Loose Tea'],
+      color: '',
+    },
+    espresso: {
+      combination: ['Espresso Machine', 'Espresso Tamper', 'Ground Espresso Beans'],
+      color: '',
+    },
+  };
+  var slotMachine = new SlotMachine(winningCombinations);
   var game = new Game(slotMachine);
   game.init();
+
   $('.status').html("Press the lever!");
-  $('.lever').click(function() {
+  $('button').click(function() {
     $('button').prop('disabled', true);
     game.run(function(result) {
       if (result) {
-        $('.status').html('Congratulations! You won a ' + result + '!');
+        if (result === 'coffee') {
+          game.score.coffee += 1;
+          $('#score-coffee').html('x ' + game.score.coffee);
+        } else if (result === 'tea') {
+          game.score.tea += 1;
+          $('#score-tea').html('x ' + game.score.tea);
+        } else if (result === 'espresso') {
+          game.score.espresso += 1;
+          $('#score-espresso').html('x ' + game.score.espresso);
+        } else {
+          console.log('error');
+        }
+        $('.status').html('Congratulations! You won a cup of ' + result + '!');
       } else {
         $('.status').html('Bummer.. try again!');
       }
